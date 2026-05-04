@@ -1547,16 +1547,25 @@
     </div>
   </div>
   <div class="contact-form-wrap">
-    <form class="contact-form" onsubmit="handleSubmit(event)">
+    <form class="contact-form" action="https://api.web3forms.com/submit" method="POST">
+      <!-- Web3Forms Access Key -->
+      <input type="hidden" name="access_key" value="d662481d-1443-4324-bfb7-4a58e57ca0ea">
+      <!-- Custom Subject -->
+      <input type="hidden" name="subject" value="New Inquiry - Prime Orchard Exports LLC">
+      <!-- Redirect after submit -->
+      <input type="hidden" name="redirect" value="false">
+      <!-- From Name -->
+      <input type="hidden" name="from_name" value="Prime Orchard Exports Website">
+
       <div class="form-row">
-        <input type="text" placeholder="Your Name *" required>
-        <input type="text" placeholder="Company Name">
+        <input type="text" name="name" placeholder="Your Name *" required>
+        <input type="text" name="company" placeholder="Company Name">
       </div>
       <div class="form-row">
-        <input type="email" placeholder="Email Address *" required>
-        <input type="tel" placeholder="WhatsApp Number">
+        <input type="email" name="email" placeholder="Email Address *" required>
+        <input type="tel" name="whatsapp" placeholder="WhatsApp Number">
       </div>
-      <select>
+      <select name="inquiry_type">
         <option value="" disabled selected>Select Inquiry Type</option>
         <option>Wholesale Import Inquiry</option>
         <option>Sample Request</option>
@@ -1564,17 +1573,54 @@
         <option>Distribution Partnership</option>
         <option>Other</option>
       </select>
-      <select>
+      <select name="product_interest">
         <option value="" disabled selected>Select Product Interest</option>
         <option>Mammoth Pecan Halves</option>
         <option>Pecan Pieces & Halves Mix</option>
         <option>Premium Gift Pack</option>
         <option>All Products</option>
       </select>
-      <input type="text" placeholder="Estimated Monthly Quantity (e.g. 500 kg, 1 ton)">
-      <textarea placeholder="Tell us more about your requirements..."></textarea>
-      <button type="submit">Send Inquiry →</button>
+      <input type="text" name="quantity" placeholder="Estimated Monthly Quantity (e.g. 500 kg, 1 ton)">
+      <textarea name="message" placeholder="Tell us more about your requirements..."></textarea>
+      <!-- Honeypot spam protection -->
+      <input type="checkbox" name="botcheck" style="display:none">
+      <button type="submit" id="submitBtn">Send Inquiry →</button>
+      <p id="formMsg" style="display:none;margin-top:10px;font-family:Montserrat,sans-serif;font-size:0.85rem;"></p>
     </form>
+
+    <script>
+      const form = document.querySelector('.contact-form');
+      const btn = document.getElementById('submitBtn');
+      const msg = document.getElementById('formMsg');
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        btn.textContent = 'Sending...';
+        btn.disabled = true;
+
+        const data = new FormData(form);
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: data
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          msg.style.display = 'block';
+          msg.style.color = '#C8973A';
+          msg.textContent = '✅ Thank you! Your inquiry has been sent. We will respond within 24 hours.';
+          form.reset();
+          btn.textContent = 'Send Inquiry →';
+          btn.disabled = false;
+        } else {
+          msg.style.display = 'block';
+          msg.style.color = '#ff6b6b';
+          msg.textContent = '❌ Something went wrong. Please email us directly at info@primeorchardexports.com';
+          btn.textContent = 'Send Inquiry →';
+          btn.disabled = false;
+        }
+      });
+    </script>
   </div>
 </section>
 
@@ -1591,10 +1637,7 @@
 </footer>
 
 <script>
-  function handleSubmit(e) {
-    e.preventDefault();
-    alert('Thank you for your inquiry! We will respond within 24 hours at info@primeorchardexports.com');
-  }
+// Form handled by Web3Forms
 
   // Smooth reveal on scroll
   const observer = new IntersectionObserver((entries) => {
